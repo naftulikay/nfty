@@ -5,26 +5,13 @@ extern crate rayon;
 #[macro_use]
 extern crate structopt;
 
+pub mod cli;
+
+use cli::{Opt, Subcommand};
 use structopt::StructOpt;
-
-#[derive(Debug,StructOpt)]
-struct Opt {
-    #[structopt(short="d", long="debug")]
-    debug: bool,
-    #[structopt(subcommand)]
-    command: SubCommand
-}
-
-#[derive(Debug,StructOpt)]
-enum SubCommand {
-    #[structopt(name="echo")]
-    Echo {
-        messages: Vec<String>,
-    },
-}
 
 fn main() {
     match Opt::from_args().command {
-        SubCommand::Echo { messages } => println!("{}", messages.join(" ")),
+        Subcommand::Echo { messages } => println!("{}", messages.join(" ")),
     }
 }
