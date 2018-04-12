@@ -1,0 +1,11 @@
+[package]
+name = "nfty"
+version = "0.1.0"
+authors = ["Naftuli Kay <me@naftuli.wtf>"]
+
+[dependencies]
+chrono = "0.4.2"
+log = "0.4.1"
+log4rs = "0.8.0"
+rayon = "1.0.1"
+structopt = "0.2.6"
