@@ -1,14 +1,21 @@
 extern crate chrono;
+extern crate git2;
+#[macro_use]
+extern crate lazy_static;
+#[macro_use]
 extern crate log;
 extern crate log4rs;
 extern crate log4rs_syslog;
+extern crate parking_lot;
+extern crate pbr;
 extern crate rayon;
+extern crate regex;
 #[macro_use]
 extern crate structopt;
 
 pub mod cli;
 
-use cli::{Opt, Subcommand};
+use cli::data::{Opt, Subcommand};
 
 use log::LevelFilter;
 
@@ -66,10 +73,6 @@ fn main() {
     configure_logging(options.verbose, options.debug, options.json, options.syslog);
 
     match options.command {
-        Subcommand::Echo { messages } => {
-            if messages.len() > 0 {
-                println!("{}", messages.join(" "));
-            }
-        }
+        Subcommand::Project(e) => cli::project::execute(e),
     }
 }
