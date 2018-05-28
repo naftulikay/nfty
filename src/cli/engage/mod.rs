@@ -1,42 +1,51 @@
-use cli::data::project::engage::Engage;
-
-use cli::project::GitHubProject;
-use cli::project::get_project_dir;
-use cli::project::project_exists;
+use api::project::Project;
 
 use std::collections::BTreeSet;
 use std::env;
+use std::error::Error;
+use std::process;
 use std::process::Command;
-use std::process::exit;
 use std::string::String;
 
+#[derive(Debug,StructOpt)]
+pub struct Engage {
+    /// The project to engage in "$ORGANIZATION/$PROJECT" GitHub format.
+    pub project: String,
+}
+
 /// Engage a project via tmux.
-pub fn execute(engage: Engage) {
-    let project = match GitHubProject::from(&engage.project) {
-        Ok(p) => p,
-        Err(_) => {
-            error!("{} is not a valid GitHub project name.", &engage.project);
-            exit(1)
+impl Engage {
+
+    pub fn execute(&self) {
+        let project = match Project::from(&self.project) {
+            Ok(p) => p,
+            Err(_) => {
+                error!("{} is not a valid project name.", &self.project);
+                process::exit(1)
+            }
+        };
+
+        info!("Engaging project {}", self.project);
+
+        // fetch it if it isn't already local
+        if let Err(e) = project.clone(|_| true) {
+            error!("Unable to fetch project {}: {}", project.url(), e.description());
+            process::exit(1);
         }
-    };
 
-    let repository = format!("{}/{}", project.owner(), project.repository());
+        // configure it just because
+        if let Err(e) = project.configure() {
+            error!("Unable to configure project {}: {}", project.url(), e.description());
+            process::exit(1);
+        }
 
-    info!("Engaging project {}", engage.project);
+        // cd into the project directory
+        debug!("Changing directory into project.");
+        env::set_current_dir(project.dir()).unwrap();
 
-    if !project_exists(&repository) {
-        error!("Project does not exist, please bring it down first.");
-        exit(1);
-    } else {
-        debug!("Project exists already.");
+        // enter the session
+        enter_tmux_session(&project.repository());
     }
-
-    // cd into the project directory
-    debug!("Changing directory into project.");
-    env::set_current_dir(get_project_dir(&repository)).unwrap();
-
-    // enter the session
-    enter_tmux_session(&project.repository());
 }
 
 /// Determine whether a tmux session exists with the given session name.

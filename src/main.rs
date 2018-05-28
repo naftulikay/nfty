@@ -13,9 +13,9 @@ extern crate regex;
 #[macro_use]
 extern crate structopt;
 
+pub mod api;
 pub mod cli;
-
-use cli::data::{Opt, Subcommand};
+pub mod util;
 
 use log::LevelFilter;
 
@@ -67,12 +67,11 @@ fn configure_logging(verbose: bool, debug: bool, json: bool, syslog: bool) {
 }
 
 fn main() {
-    let options = Opt::from_args();
+    let options = cli::Opt::from_args();
 
     // configure logging for console/syslog, json/text, verbose/debug
     configure_logging(options.verbose, options.debug, options.json, options.syslog);
 
-    match options.command {
-        Subcommand::Project(e) => cli::project::execute(e),
-    }
+    // kick off execution
+    options.execute();
 }
