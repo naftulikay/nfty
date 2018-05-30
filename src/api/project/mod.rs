@@ -1,5 +1,8 @@
 mod hooks;
 
+#[cfg(test)]
+mod test;
+
 use regex::Regex;
 
 use std::env::home_dir;
@@ -18,12 +21,12 @@ use git2::build::RepoBuilder;
 lazy_static! {
     // match https protocol git clone thingamajigs
     static ref HTTPS_PROVIDER: Regex = Regex::new(r#"(?x)
-        \b(?P<protocol>https)://(?P<host>[^/\s]+)/(?P<owner>[^/\s]+)/(?P<repository>[^/\s]+?)(?:\.git)\b
+        \b(?P<protocol>https)://(?P<host>[^/\s]+)/(?P<owner>[^/\s]+)/(?P<repository>[^/\s]+)\b
     "#).unwrap();
 
     // match ssh and short form
     static ref SSH_PROVIDER: Regex = Regex::new(r#"(?x)
-        \b(?:(?:(?P<user>[^@\s/]+)@)?(?P<host>[^:\s/]+)[:/])?(?P<owner>[^/\s]+)/(?P<repository>[^/\s]+?)(?:\.git\b)?\b
+        \b(?:(?:(?P<user>[^@\s/]+)@)?(?P<host>[^:\s/]+)[:/])?(?P<owner>[^/\s]+)/(?P<repository>[^/\s]+)\b
     "#).unwrap();
 
     pub static ref PROJECT_ROOT: PathBuf = home_dir().expect("unable to get home dir").join("devel").join("src");
@@ -43,6 +46,7 @@ pub struct Project {
     user: Option<String>,
 }
 
+#[derive(Debug,Eq,PartialEq)]
 pub enum Protocol {
     Https,
     Ssh,
@@ -73,6 +77,12 @@ impl Project {
     ///   - https://github.com/naftulikay/gro.git
     ///
     pub fn from(value: &str) -> Result<Self, io::Error> {
+        let value = if value.ends_with(".git") {
+            &value[0..value.len()-4]
+        } else {
+            value
+        };
+
         if HTTPS_PROVIDER.is_match(value) {
             // anonymous HTTPS urls
             let captures = HTTPS_PROVIDER.captures(value).unwrap();
@@ -100,6 +110,16 @@ impl Project {
         } else {
             Err(io::Error::new(io::ErrorKind::InvalidData, ERR_PROJECT_NAME))
         }
+    }
+
+    /// Get the protocol of the repository.
+    pub fn protocol(&self) -> &Protocol {
+        &self.protocol
+    }
+
+    /// Get the host name of the repository.
+    pub fn host(&self) -> &str {
+        &self.host
     }
 
     /// Get the user by which to connect to the remote repository.
