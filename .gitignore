@@ -2,3 +2,5 @@
 /.vagrant
 /target/
 **/*.rs.bk
+
+/nfty-derive/target/

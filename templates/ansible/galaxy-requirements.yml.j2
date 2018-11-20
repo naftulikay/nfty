@@ -1,0 +1,10 @@
+---
+{%- for role in roles %}
+- src: {{ role.src.as_str() }}
+{%- if role.name.is_some() %}
+  name: {{ role.name.clone().unwrap() }}
+{%- endif %}
+{%- if role.version.is_some() %}
+  version: {{ role.version.clone().unwrap() }}
+{%- endif %}
+{%- endfor %}

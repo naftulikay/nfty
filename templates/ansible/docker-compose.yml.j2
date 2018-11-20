@@ -1,0 +1,22 @@
+---
+version: '3'
+services:
+{%- if dind %}
+  dind:
+    container_name: dind
+    image: docker:stable-dind
+    privileged: true
+{% endif -%}
+{% for machine in machines %}
+  {{ machine.name.as_str() }}:
+    container_name: {{ machine.name.as_str() }}
+    image: {{ machine.image.as_str() }}
+    privileged: {{ machine.is_privileged }}
+{%- if dind %}
+    depends_on: [dind]
+    links: [dind:docker]
+{%- endif %}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    stop_grace_period: 1s
+{% endfor %}

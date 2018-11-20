@@ -1,0 +1,8 @@
+---
+- name: build
+  hosts: all
+  become: true
+  roles:
+    - role: vagrant-go-dev
+      go_package: GO_PACKAGE
+      go_version: GO_VERSION

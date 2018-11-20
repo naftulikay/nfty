@@ -1,0 +1,106 @@
+# Ansible
+.ansible/galaxy-roles
+.ansible/roles
+*.retry
+
+{%- if golang %}
+
+# Golang
+*.test
+{%- endif %}
+
+{%- if java %}
+
+# JVM
+target/
+
+*.class
+*.ear
+*.jar
+*.nar
+*.war
+{%- endif %}
+
+{%- if native %}
+
+# Native
+
+*.a
+*.a
+*.app
+*.d
+*.dll
+*.dylib
+*.elf
+*.exe
+*.exp
+*.gch
+*.hex
+*.i*86
+*.ilk
+*.ko
+*.la
+*.lib
+*.lo
+*.map
+*.o
+*.obj
+*.out
+*.pch
+*.so
+*.so.*
+*.x86_64
+{%- endif %}
+
+{%- if node %}
+
+# Node
+bower_components/
+node_modules/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+{%- endif %}
+
+{%- if python %}
+
+# Python
+/bin/
+/build/
+/develop-eggs/
+/dist/
+/eggs/
+/parts/
+/src/*.egg-info
+/.eggs/
+/.installed.cfg
+/.python-version
+
+__pycache__
+*.pyc
+*.pyo
+{%- endif %}
+
+{%- if ruby %}
+
+# Ruby
+/vendor/
+
+.rvmrc
+
+*.gem
+*.rbc
+{%- endif %}
+
+{%- if rust %}
+
+# Rust
+target/
+
+**/*.rs.bk
+{%- endif %}
+
+# Vagrant
+.vagrant/
+*-VBoxSVC-*.log
