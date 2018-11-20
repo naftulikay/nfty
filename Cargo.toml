@@ -5,6 +5,7 @@ authors = ["Naftuli Kay <me@naftuli.wtf>"]
 
 [dependencies]
 chrono = "0.4.2"
+dirs = "1.0.4"
 git2 = "0.7.1"
 lazy_static = "1.0.0"
 log = "0.4.1"

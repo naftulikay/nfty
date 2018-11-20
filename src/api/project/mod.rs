@@ -3,9 +3,10 @@ mod hooks;
 #[cfg(test)]
 mod test;
 
+use dirs::home_dir;
+
 use regex::Regex;
 
-use std::env::home_dir;
 use std::error::Error;
 use std::fmt;
 use std::io;

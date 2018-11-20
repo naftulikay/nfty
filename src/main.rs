@@ -1,4 +1,5 @@
 extern crate chrono;
+extern crate dirs;
 extern crate git2;
 #[macro_use]
 extern crate lazy_static;
