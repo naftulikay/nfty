@@ -1,0 +1,31 @@
+---
+- name: build
+  hosts: all
+  become: true
+  roles:
+{%- if self.has_docker() %}
+    - role: vagrant-docker
+{%- endif %}
+{%- if self.has_go() %}
+    - role: vagrant-go-dev
+      go_package: {{ go_package.clone().unwrap() }}
+      go_version: {{ go_version.clone().unwrap() }}
+{%- endif %}
+{%- if self.has_java() %}
+    - role: vagrant-java-dev
+{%- endif %}
+{%- if self.has_node() %}
+    - role: vagrant-node-dev
+      node_version: {{ node_version.clone().unwrap() }}
+{%- endif %}
+{%- if self.has_python() %}
+    - role: vagrant-python-dev
+      python_version: {{ python_version.clone().unwrap() }}
+{%- endif %}
+{%- if self.has_ruby() %}
+    - role: vagrant-ruby-dev
+      ruby_version: {{ ruby_version.clone().unwrap() }}
+{%- endif %}
+{%- if self.has_rust() %}
+    - role: vagrant-rust-dev
+{%- endif %}

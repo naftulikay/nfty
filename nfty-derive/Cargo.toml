@@ -1,0 +1,12 @@
+[package]
+name = "nfty-derive"
+version = "0.1.0"
+edition = "2018"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+askama = "0.7.2"
+syn = "0.15.23"
+quote = "0.6.10"

@@ -1,22 +1,28 @@
+pub mod parse;
+pub mod templates;
+
 mod hooks;
 
 #[cfg(test)]
 mod test;
 
+use dirs::home_dir;
+
+use lazy_static::lazy_static;
+
 use regex::Regex;
 
-use std::env::home_dir;
 use std::error::Error;
 use std::fmt;
 use std::io;
 use std::path::PathBuf;
 
+use git2::build::RepoBuilder;
 use git2::Cred;
 use git2::FetchOptions;
 use git2::Progress;
 use git2::RemoteCallbacks;
 use git2::Repository;
-use git2::build::RepoBuilder;
 
 lazy_static! {
     // match https protocol git clone thingamajigs
@@ -32,7 +38,8 @@ lazy_static! {
     pub static ref PROJECT_ROOT: PathBuf = home_dir().expect("unable to get home dir").join("devel").join("src");
 }
 
-static ERR_PROJECT_NAME: &'static str = r#"Project name must be formatted in "organization/repository" format."#;
+static ERR_PROJECT_NAME: &'static str =
+    r#"Project name must be formatted in "organization/repository" format."#;
 
 pub static DEFAULT_USER: &'static str = "git";
 pub static DEFAULT_HOST: &'static str = "github.com";
@@ -46,7 +53,7 @@ pub struct Project {
     user: Option<String>,
 }
 
-#[derive(Debug,Eq,PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum Protocol {
     Https,
     Ssh,
@@ -55,8 +62,19 @@ pub enum Protocol {
 impl fmt::Display for Project {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self.protocol {
-            Protocol::Https => write!(f, "https://{}/{}/{}", self.host, self.owner, self.repository),
-            Protocol::Ssh   => write!(f, "{}@{}:{}/{}", self.user(), self.host, self.owner, self.repository),
+            Protocol::Https => write!(
+                f,
+                "https://{}/{}/{}",
+                self.host, self.owner, self.repository
+            ),
+            Protocol::Ssh => write!(
+                f,
+                "{}@{}:{}/{}",
+                self.user(),
+                self.host,
+                self.owner,
+                self.repository
+            ),
         }
     }
 }
@@ -78,7 +96,7 @@ impl Project {
     ///
     pub fn from(value: &str) -> Result<Self, io::Error> {
         let value = if value.ends_with(".git") {
-            &value[0..value.len()-4]
+            &value[0..value.len() - 4]
         } else {
             value
         };
@@ -88,7 +106,10 @@ impl Project {
             let captures = HTTPS_PROVIDER.captures(value).unwrap();
 
             Ok(Project {
-                host: captures.name("host").map_or(DEFAULT_HOST, |m| m.as_str()).to_string(),
+                host: captures
+                    .name("host")
+                    .map_or(DEFAULT_HOST, |m| m.as_str())
+                    .to_string(),
                 owner: captures.name("owner").unwrap().as_str().to_string(),
                 protocol: Protocol::Https,
                 _raw: value.to_string(),
@@ -100,12 +121,20 @@ impl Project {
             let captures = SSH_PROVIDER.captures(value).unwrap();
 
             Ok(Project {
-                host: captures.name("host").map_or(DEFAULT_HOST, |m| m.as_str()).to_string(),
+                host: captures
+                    .name("host")
+                    .map_or(DEFAULT_HOST, |m| m.as_str())
+                    .to_string(),
                 owner: captures.name("owner").unwrap().as_str().to_string(),
                 protocol: Protocol::Ssh,
                 _raw: value.to_string(),
                 repository: captures.name("repository").unwrap().as_str().to_string(),
-                user: Some(captures.name("user").map_or(DEFAULT_USER, |m| m.as_str()).to_string()),
+                user: Some(
+                    captures
+                        .name("user")
+                        .map_or(DEFAULT_USER, |m| m.as_str())
+                        .to_string(),
+                ),
             })
         } else {
             Err(io::Error::new(io::ErrorKind::InvalidData, ERR_PROJECT_NAME))
@@ -143,36 +172,45 @@ impl Project {
     pub fn url(&self) -> String {
         match self.protocol {
             Protocol::Https => format!("https://{}/{}/{}", self.host, self.owner, self.repository),
-            Protocol::Ssh   => format!("{}@{}:{}/{}", self.user(), self.host, self.owner, self.repository),
+            Protocol::Ssh => format!(
+                "{}@{}:{}/{}",
+                self.user(),
+                self.host,
+                self.owner,
+                self.repository
+            ),
         }
     }
 
     /// Get the directory of a given project.
     pub fn dir(&self) -> PathBuf {
-        PROJECT_ROOT.join(&self.host).join(&self.owner).join(&self.repository)
+        PROJECT_ROOT
+            .join(&self.host)
+            .join(&self.owner)
+            .join(&self.repository)
     }
 
     /// Determine whether a project locally exists.
     pub fn is_local(&self) -> bool {
         let project_dir = self.dir();
 
-        return project_dir.exists() && project_dir.is_dir()
+        return project_dir.exists() && project_dir.is_dir();
     }
 
     /// Clone the repository.
     pub fn clone<F>(&self, callback: F) -> io::Result<Repository>
-            where F: FnMut(Progress) -> bool {
+    where
+        F: FnMut(Progress) -> bool,
+    {
         if let Ok(repo) = Repository::open(&self.dir()) {
             // if the repository already exists, don't clone it, just return this.
-            return Ok(repo)
+            return Ok(repo);
         }
 
         let mut callbacks = RemoteCallbacks::new();
 
         // set credentials
-        callbacks.credentials(|_a, _b, _cred_type| {
-            Cred::ssh_key_from_agent(&self.user())
-        });
+        callbacks.credentials(|_a, _b, _cred_type| Cred::ssh_key_from_agent(&self.user()));
 
         // set transfer progress
         callbacks.transfer_progress(callback);
@@ -186,7 +224,7 @@ impl Project {
         builder.fetch_options(fetch_options);
 
         match builder.clone(&self.url(), &self.dir()) {
-            Ok(r)  => Ok(r),
+            Ok(r) => Ok(r),
             Err(e) => Err(io::Error::new(io::ErrorKind::Other, e.description().trim())),
         }
     }

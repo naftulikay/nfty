@@ -1,3 +1,5 @@
+use log::debug;
+
 use std::fs::File;
 use std::fs::create_dir;
 use std::io;

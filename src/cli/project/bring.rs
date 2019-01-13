@@ -1,6 +1,6 @@
-use rayon::prelude::*;
+use log::{debug, info, error};
 
-use api::project::Project;
+use rayon::prelude::*;
 
 use pbr::MultiBar;
 
@@ -9,7 +9,10 @@ use std::io::stderr;
 use std::process;
 use std::thread;
 
-use util::Git;
+use structopt::StructOpt;
+
+use crate::util::Git;
+use crate::project::Project;
 
 #[derive(Debug,StructOpt)]
 pub struct Bring {
