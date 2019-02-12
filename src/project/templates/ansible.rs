@@ -137,6 +137,16 @@ impl Makefile {
 }
 
 #[derive(Default, Template, WritableTemplate)]
+#[template(path = "ansible/tests/gitignore.j2")]
+pub struct TestsGitIgnore {}
+
+impl TestsGitIgnore {
+    pub fn new() -> Self {
+        Self::default()
+    }
+}
+
+#[derive(Default, Template, WritableTemplate)]
 #[template(path = "ansible/tests/Makefile.j2")]
 pub struct TestsMakefile {}
 

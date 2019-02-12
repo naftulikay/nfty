@@ -1,6 +1,6 @@
 [package]
 name = "nfty"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Naftuli Kay <me@naftuli.wtf>"]
 edition = "2018"
 build = "build.rs"
