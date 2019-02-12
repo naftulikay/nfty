@@ -1,7 +1,6 @@
 ---
 - name: build
   hosts: all
-  become: true
   roles:
     - role: vagrant-python-dev
       python_version: PYTHON_VERSION

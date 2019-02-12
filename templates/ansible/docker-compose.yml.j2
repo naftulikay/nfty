@@ -14,7 +14,7 @@ services:
     privileged: {{ machine.is_privileged }}
 {%- if dind %}
     depends_on: [dind]
-    links: [dind:docker]
+    links: ["dind:docker"]
 {%- endif %}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro

@@ -82,6 +82,7 @@ impl Ansible {
         self.render_test_inventory(root);
         self.render_test_makefile(root);
         self.render_test_galaxy_reqs(root);
+        self.render_test_gitignore(root);
     }
 
     fn write_or_die<T>(&self, root: &Path, dest: &Path, template: T) where T: WritableTemplate {
@@ -189,6 +190,10 @@ impl Ansible {
         self.write_or_die(root, &root.join("tests").join("ansible.cfg"), templates::ansible::AnsibleConfig::new()
             .role_path(".ansible/roles".to_string())
             .role_path(".ansible/galaxy-roles".to_string()));
+    }
+
+    fn render_test_gitignore(&self, root: &Path) {
+        self.write_or_die(root, &root.join("tests").join(".gitignore"), templates::ansible::TestsGitIgnore::new());
     }
 
     fn render_test_inventory(&self, root: &Path) {
