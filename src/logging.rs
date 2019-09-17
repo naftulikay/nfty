@@ -50,13 +50,13 @@ pub fn init(output: &LoggingOutput, format: &LoggingFormat, level: &LoggingLevel
 
 fn init_once(output: &LoggingOutput, format: &LoggingFormat, level: &LoggingLevel) {
     // TODO there has to be a way to minify this
-    let encoder: Box<Encode> = match format {
+    let encoder: Box<dyn Encode> = match format {
         LoggingFormat::Json    => Box::new(JsonEncoder::new()),
         LoggingFormat::Plain   => Box::new(PatternEncoder::new(PLAIN_LOGGING_FORMAT)),
         LoggingFormat::Verbose => Box::new(PatternEncoder::new(VERBOSE_LOGGING_FORMAT)),
     };
 
-    let appender: Box<Append> = match output {
+    let appender: Box<dyn Append> = match output {
         LoggingOutput::Console(dest) => Box::new(ConsoleAppender::builder().encoder(encoder).target(match dest {
             ConsoleStream::Stderr => Target::Stderr,
             ConsoleStream::Stdout => Target::Stdout,
