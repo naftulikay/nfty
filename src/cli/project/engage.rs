@@ -4,7 +4,6 @@ use log::{debug, error, info};
 
 use std::collections::BTreeSet;
 use std::env;
-use std::error::Error;
 use std::process;
 use std::process::Command;
 use std::string::String;
@@ -35,7 +34,7 @@ impl Engage {
             error!(
                 "Unable to fetch project {}: {}",
                 project.url(),
-                e.description()
+                e.to_string()
             );
             process::exit(1);
         }
@@ -45,7 +44,7 @@ impl Engage {
             error!(
                 "Unable to configure project {}: {}",
                 project.url(),
-                e.description()
+                e.to_string(),
             );
             process::exit(1);
         }

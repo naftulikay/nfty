@@ -12,7 +12,6 @@ use lazy_static::lazy_static;
 
 use regex::Regex;
 
-use std::error::Error;
 use std::fmt;
 use std::io;
 use std::path::PathBuf;
@@ -225,7 +224,7 @@ impl Project {
 
         match builder.clone(&self.url(), &self.dir()) {
             Ok(r) => Ok(r),
-            Err(e) => Err(io::Error::new(io::ErrorKind::Other, e.description().trim())),
+            Err(e) => Err(io::Error::new(io::ErrorKind::Other, e.to_string().trim())),
         }
     }
 

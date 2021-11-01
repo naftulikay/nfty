@@ -4,7 +4,6 @@ use rayon::prelude::*;
 
 use pbr::MultiBar;
 
-use std::error::Error;
 use std::io::stderr;
 use std::process;
 use std::thread;
@@ -65,7 +64,7 @@ impl Bring {
             match clone_result {
                 Ok(_) => debug!("Successfully cloned repository."),
                 Err(e) => {
-                    error!("Unable to clone repository {}: {}", &project.url(), e.description());
+                    error!("Unable to clone repository {}: {}", &project.url(), e.to_string());
                     process::exit(1);
                 }
             };
