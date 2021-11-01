@@ -1,4 +1,5 @@
 /.ansible/galaxy-roles
+/.idea
 /.vagrant
 /target/
 **/*.rs.bk

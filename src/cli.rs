@@ -5,8 +5,8 @@ use crate::logging;
 use structopt::StructOpt;
 use structopt::clap::AppSettings;
 
-#[structopt(raw(global_settings="&[AppSettings::ColoredHelp]"))]
 #[derive(Debug,StructOpt)]
+#[structopt(raw(global_settings="&[AppSettings::ColoredHelp]"))]
 pub struct Opt {
     /// Emit debug-level log statements.
     #[structopt(short="d", long="debug")]
@@ -26,7 +26,7 @@ pub struct Opt {
 }
 
 impl Opt {
-
+    /// Setup logging.
     fn configure_logging(&self) {
         let output = match self.syslog {
             true  => logging::LoggingOutput::Syslog,
