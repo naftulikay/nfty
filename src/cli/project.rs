@@ -1,6 +1,7 @@
 mod bring;
 mod conform;
 mod engage;
+mod license;
 
 use structopt::StructOpt;
 
@@ -15,6 +16,9 @@ pub enum Project {
     /// Manage software projects.
     #[structopt(name = "engage")]
     Engage(engage::Engage),
+    /// Generate software licenses for a project.
+    #[structopt(name = "license")]
+    License(license::License),
 }
 
 impl Project {
@@ -23,6 +27,7 @@ impl Project {
             Project::Bring(ref c) => c.execute(),
             Project::Conform(ref c) => c.execute(),
             Project::Engage(ref c) => c.execute(),
+            Project::License(ref c) => c.execute(),
         }
     }
 }
