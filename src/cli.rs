@@ -3,34 +3,32 @@ pub mod project;
 use crate::logging;
 
 use structopt::StructOpt;
-use structopt::clap::AppSettings;
 
-#[derive(Debug,StructOpt)]
-#[structopt(raw(global_settings="&[AppSettings::ColoredHelp]"))]
+#[derive(Debug, StructOpt)]
 pub struct Opt {
     /// Emit debug-level log statements.
-    #[structopt(short="d", long="debug")]
+    #[structopt(short = "d", long = "debug")]
     pub debug: bool,
     /// Emit info-level log statements. If neither --verbose nor --debug are specified, the default
     /// log level is set to warnings and errors only.
-    #[structopt(short="v", long="verbose")]
+    #[structopt(short = "v", long = "verbose")]
     pub verbose: bool,
     /// Write logs to syslog using syslog(3).
-    #[structopt(long="syslog")]
+    #[structopt(long = "syslog")]
     pub syslog: bool,
     /// Format logs as JSON lines. Default is plaintext.
-    #[structopt(short="j", long="json")]
+    #[structopt(short = "j", long = "json")]
     pub json: bool,
     #[structopt(subcommand)]
-    pub command: Subcommand
+    pub command: Subcommand,
 }
 
 impl Opt {
     /// Setup logging.
     fn configure_logging(&self) {
         let output = match self.syslog {
-            true  => logging::LoggingOutput::Syslog,
-            false => logging::LoggingOutput::Console(logging::ConsoleStream::Stderr)
+            true => logging::LoggingOutput::Syslog,
+            false => logging::LoggingOutput::Console(logging::ConsoleStream::Stderr),
         };
 
         let format = if self.json {
@@ -62,6 +60,6 @@ impl Opt {
 #[derive(Debug, StructOpt)]
 pub enum Subcommand {
     /// Manage software projects.
-    #[structopt(name="project")]
+    #[structopt(name = "project")]
     Project(crate::cli::project::Project),
 }
